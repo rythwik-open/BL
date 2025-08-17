@@ -1,6 +1,6 @@
 """
 Professional Image Generator for Based Labs
-Modular system that integrates into the main backend
+Integrated into the automated content pipeline
 """
 
 import cv2
@@ -11,6 +11,8 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
+
+from app.models.generated_content import GeneratedContent
 
 # Try to import advanced libraries (graceful fallback)
 try:
@@ -66,53 +68,102 @@ class BasedLabsImageGenerator:
         templates = {}
         
         # Based Labs professional templates
-        templates["news_post"] = Template(
-            name="news_post", 
-            background_path="news_post_bg.png",
+        templates["quote_minimal"] = Template(
+            name="quote_minimal", 
+            background_path="quote_minimal_bg.png",
             text_areas={
                 "title": TextArea(
-                    x=80, y=180, max_width=920, max_height=200,
-                    font_size=52, color="#00ff00", alignment="left",
+                    x=80, y=300, max_width=920, max_height=400,
+                    font_size=64, color="#00ff00", alignment="center",
+                    text_type="title"
+                ),
+                "attribution": TextArea(
+                    x=80, y=750, max_width=920, max_height=80,
+                    font_size=24, color="#888888", alignment="center",
+                    text_type="caption"
+                )
+            },
+            suitable_for=["quote", "hook", "minimal"]
+        )
+        
+        templates["long_form"] = Template(
+            name="long_form",
+            background_path="long_form_bg.png", 
+            text_areas={
+                "title": TextArea(
+                    x=80, y=150, max_width=920, max_height=200,
+                    font_size=48, color="#00ff00", alignment="left",
                     text_type="title"
                 ),
                 "description": TextArea(
-                    x=80, y=420, max_width=920, max_height=400,
-                    font_size=28, color="#ffffff", alignment="left", 
+                    x=80, y=400, max_width=920, max_height=400,
+                    font_size=28, color="#ffffff", alignment="left",
                     text_type="body"
                 ),
                 "cta": TextArea(
-                    x=80, y=880, max_width=600, max_height=80,
+                    x=80, y=850, max_width=600, max_height=80,
                     font_size=24, color="#00ff00", alignment="left",
                     text_type="caption"
                 )
             },
-            suitable_for=["news", "announcement", "insight", "framework"]
+            suitable_for=["framework", "explanation", "educational"]
         )
         
-        templates["quote_post"] = Template(
-            name="quote_post",
-            background_path="quote_post_bg.png", 
+        templates["carousel_series"] = Template(
+            name="carousel_series",
+            background_path="carousel_bg.png",
             text_areas={
+                "slide_number": TextArea(
+                    x=950, y=50, max_width=100, max_height=50,
+                    font_size=20, color="#00ff00", alignment="center",
+                    text_type="caption"
+                ),
                 "title": TextArea(
-                    x=80, y=200, max_width=920, max_height=300,
-                    font_size=48, color="#00ff00", alignment="center",
+                    x=80, y=200, max_width=920, max_height=150,
+                    font_size=42, color="#00ff00", alignment="left",
                     text_type="title"
                 ),
-                "description": TextArea(
-                    x=80, y=550, max_width=920, max_height=250,
-                    font_size=24, color="#cccccc", alignment="center",
+                "content": TextArea(
+                    x=80, y=400, max_width=920, max_height=500,
+                    font_size=26, color="#ffffff", alignment="left",
                     text_type="body"
-                ),
-                "attribution": TextArea(
-                    x=80, y=850, max_width=920, max_height=80,
-                    font_size=20, color="#888888", alignment="center",
-                    text_type="caption"
                 )
             },
-            suitable_for=["quote", "insight", "hook", "principle"]
+            suitable_for=["carousel", "series", "multi_slide"]
         )
         
         return templates
+    
+    async def generate_image_for_content(self, content: GeneratedContent) -> Image.Image:
+        """
+        Generate image for a GeneratedContent object
+        
+        Args:
+            content: GeneratedContent model instance
+            
+        Returns:
+            PIL Image object
+        """
+        # Convert content to format expected by generator
+        content_dict = {
+            "main_text": content.text,
+            "type": content.content_type,
+            "platform": content.platform
+        }
+        
+        # Select template based on content type
+        template_name = self._map_content_type_to_template(content.content_type)
+        
+        return self.generate_post(content_dict, template_name)
+    
+    def _map_content_type_to_template(self, content_type: str) -> str:
+        """Map content types to template names"""
+        mapping = {
+            "quote_minimal": "quote_minimal",
+            "long_form": "long_form", 
+            "carousel_series": "carousel_series"
+        }
+        return mapping.get(content_type, "long_form")
     
     def generate_post(self, content: Dict, template_name: Optional[str] = None) -> Image.Image:
         """
@@ -145,16 +196,17 @@ class BasedLabsImageGenerator:
     def _select_template(self, content: Dict) -> str:
         """Intelligently select template based on content"""
         content_type = content.get("type", "unknown")
-        has_title = bool(content.get("title"))
-        has_description = bool(content.get("description"))
+        text_length = len(content.get("main_text", ""))
         
-        # Rule-based selection
-        if content_type in ["quote", "principle", "insight"] or not has_description:
-            return "quote_post"
-        elif has_title and has_description:
-            return "news_post"
+        # Based Labs template selection logic
+        if content_type == "quote_minimal" or text_length < 100:
+            return "quote_minimal"
+        elif content_type == "long_form" or (100 <= text_length <= 800):
+            return "long_form"
+        elif content_type == "carousel_series" or text_length > 800:
+            return "carousel_series"
         else:
-            return "news_post"  # Default to structured layout
+            return "long_form"  # Default
     
     def _create_base_image(self, template: Template) -> Image.Image:
         """Create base image with template background"""
@@ -259,8 +311,10 @@ class BasedLabsImageGenerator:
         content_mapping = {
             "title": content.get("title") or content.get("main_text", ""),
             "description": content.get("description") or content.get("body", ""),
+            "content": content.get("main_text", ""),
             "cta": content.get("cta", ""),
-            "attribution": content.get("attribution", "")
+            "attribution": content.get("attribution", "- Based Labs"),
+            "slide_number": content.get("slide_number", "1/5")
         }
         
         for area_name, area_config in template.text_areas.items():
@@ -378,27 +432,21 @@ class BasedLabsImageGenerator:
         else:  # left alignment
             return area.x
 
-# Test function that integrates into the main system
-def test_image_generation():
-    """Test function that demonstrates the system"""
-    generator = BasedLabsImageGenerator()
-    
-    # Test content (this would come from AI in the real system)
-    test_content = {
-        "main_text": "You don't need permission to start building the future",
-        "attribution": "- Based Labs",
-        "type": "quote"
-    }
-    
-    # Generate image
-    img = generator.generate_post(test_content)
-    
-    # Save test output
-    output_path = "test_output.png"
-    img.save(output_path)
-    print(f"Test image saved to: {output_path}")
-    
-    return img
 
-if __name__ == "__main__":
-    test_image_generation()
+class ImageGeneratorService:
+    """Service wrapper for the BasedLabsImageGenerator"""
+    
+    def __init__(self):
+        self.generator = BasedLabsImageGenerator(
+            templates_dir="templates",
+            fonts_dir="fonts"
+        )
+    
+    async def generate_image_for_content(self, content: GeneratedContent) -> Image.Image:
+        """Generate image for content with proper async handling"""
+        return await self.generator.generate_image_for_content(content)
+    
+    async def save_image(self, image: Image.Image, output_path: str) -> str:
+        """Save generated image to file"""
+        image.save(output_path, "PNG", optimize=True)
+        return output_path

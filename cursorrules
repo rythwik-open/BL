@@ -1,0 +1,234 @@
+# Based Labs Automated Content Pipeline - Cursor Rules
+
+## Project Overview
+You are working on the Based Labs Automated Content Pipeline, a comprehensive system that transforms content curation into published social media posts with minimal human intervention while maintaining Based Labs brand voice and quality standards.
+
+## Core Documentation References
+- **Requirements**: `.kiro/specs/automated-content-pipeline/requirements.md`
+- **Design**: `.kiro/specs/automated-content-pipeline/design.md` 
+- **Tasks**: `.kiro/specs/automated-content-pipeline/tasks.md`
+- **Directory Structure**: `.kiro/steering/directory-structure.md`
+- **Brand Guidelines**: `.kiro/steering/based-labs-voice.md`
+- **Content Rules**: `.kiro/steering/content-generation-rules.md`
+
+## STRICT DEVELOPMENT RULES
+
+### 1. BRAND VOICE COMPLIANCE
+- **ALWAYS** maintain 7/10 provocative level in content generation
+- **ALWAYS** use Based Labs hook formulas:
+  - "You're waiting for permission that will never come"
+  - "This rule made sense in 1950. It's destroying you in 2025"
+  - "Everyone does X, but here's why Y works better"
+  - "If [system] can replace you, it's not your fault—it's the system you were trained for"
+- **ALWAYS** focus on: agency over permission, system inefficiencies, gatekeeping, individual empowerment
+- **NEVER** create content that doesn't include clear value proposition and specific next action
+- **NEVER** exceed provocative level 8/10 or go below 6/10
+
+### 2. ARCHITECTURE COMPLIANCE
+- **ALWAYS** follow the service-oriented architecture defined in design.md
+- **ALWAYS** use async/await for database operations and external API calls
+- **ALWAYS** implement proper error handling with graceful degradation
+- **NEVER** bypass the service layer - API endpoints must call services, not models directly
+- **NEVER** create circular imports between services
+- **ALWAYS** use dependency injection pattern with FastAPI Depends()
+
+### 3. DATABASE AND MODEL RULES
+- **ALWAYS** use SQLAlchemy async sessions
+- **ALWAYS** inherit from BaseModel for common fields (id, created_at, updated_at)
+- **ALWAYS** use UUID for primary keys
+- **ALWAYS** include proper relationships and foreign keys
+- **NEVER** use synchronous database operations
+- **NEVER** create models without proper migrations
+- **ALWAYS** use descriptive table and column names in snake_case
+
+### 4. API DEVELOPMENT RULES
+- **ALWAYS** use Pydantic schemas for request/response validation
+- **ALWAYS** include proper HTTP status codes and error responses
+- **ALWAYS** implement pagination for list endpoints (default limit: 10)
+- **ALWAYS** use proper REST conventions (GET, POST, PUT, DELETE)
+- **NEVER** expose internal model structures directly in API responses
+- **ALWAYS** include API documentation with examples
+- **ALWAYS** validate input data and sanitize outputs
+
+### 5. CONTENT GENERATION RULES
+- **ALWAYS** validate content against Based Labs quality filters before saving
+- **ALWAYS** implement automatic regeneration for failed quality checks
+- **ALWAYS** use character count thresholds for template selection:
+  - <100 chars: quote_minimal template
+  - 100-800 chars: long_form template  
+  - >800 chars: carousel_series template
+- **NEVER** generate content without brand voice validation
+- **ALWAYS** include engagement metrics tracking (2% engagement threshold, 1% save threshold)
+
+### 6. IMAGE GENERATION RULES
+- **ALWAYS** use the BasedLabsImageGenerator service for all image creation
+- **ALWAYS** maintain brand consistency: neon green (#00ff00), black backgrounds, high contrast
+- **ALWAYS** ensure text readability across all devices
+- **ALWAYS** apply professional effects (color grading, typography, shadows)
+- **NEVER** create images without proper template selection
+- **ALWAYS** optimize images for platform requirements (1080x1080 for Instagram)
+
+### 7. TESTING REQUIREMENTS
+- **ALWAYS** write unit tests for all service methods
+- **ALWAYS** write integration tests for complete workflows
+- **ALWAYS** mock external API calls in tests
+- **ALWAYS** test error conditions and edge cases
+- **NEVER** commit code without passing tests
+- **ALWAYS** maintain test coverage above 80%
+
+### 8. CODE QUALITY STANDARDS
+- **ALWAYS** use type hints for all function parameters and returns
+- **ALWAYS** write docstrings for public functions and classes
+- **ALWAYS** follow PEP 8 style guidelines
+- **ALWAYS** use descriptive variable and function names
+- **NEVER** use magic numbers - define constants
+- **ALWAYS** handle exceptions gracefully with proper logging
+- **ALWAYS** use async context managers for resource management
+
+### 9. SECURITY REQUIREMENTS
+- **ALWAYS** validate and sanitize all user inputs
+- **ALWAYS** use environment variables for sensitive configuration
+- **NEVER** commit API keys or secrets to version control
+- **ALWAYS** implement proper authentication for admin endpoints
+- **ALWAYS** use HTTPS in production configurations
+- **ALWAYS** implement rate limiting for public endpoints
+
+### 10. PERFORMANCE REQUIREMENTS
+- **ALWAYS** use connection pooling for database connections
+- **ALWAYS** implement caching for frequently accessed data
+- **ALWAYS** use background tasks (Celery) for long-running operations
+- **NEVER** perform blocking operations in API endpoints
+- **ALWAYS** optimize database queries to avoid N+1 problems
+- **ALWAYS** implement proper pagination and filtering
+
+### 11. DIRECTORY STRUCTURE COMPLIANCE
+- **ALWAYS** follow the exact directory structure defined in `.kiro/steering/directory-structure.md`
+- **NEVER** create files outside the established structure
+- **ALWAYS** use proper naming conventions:
+  - snake_case for Python files and functions
+  - PascalCase for classes and React components
+  - kebab-case for directories when needed
+- **ALWAYS** organize imports in the correct order (stdlib, third-party, local)
+
+### 12. DEPLOYMENT AND CONFIGURATION
+- **ALWAYS** use Docker for containerization
+- **ALWAYS** include health check endpoints
+- **ALWAYS** use environment-based configuration
+- **NEVER** hardcode configuration values
+- **ALWAYS** include proper logging configuration
+- **ALWAYS** use Alembic for database migrations
+
+### 13. COMMUNITY ENGAGEMENT RULES
+- **ALWAYS** categorize comments (question, feedback, spam, engagement)
+- **ALWAYS** provide constructive response suggestions
+- **ALWAYS** convert community questions into content opportunities
+- **NEVER** ignore negative feedback - provide guidance for constructive responses
+- **ALWAYS** track sentiment analysis for community interactions
+
+### 14. ANALYTICS AND MONITORING
+- **ALWAYS** track all required metrics (engagement, saves, clicks, reach)
+- **ALWAYS** implement performance thresholds and alerting
+- **ALWAYS** provide actionable insights and recommendations
+- **NEVER** collect metrics without proper analysis and reporting
+- **ALWAYS** implement continuous learning from performance data
+
+### 15. CONTENT CALENDAR AND SCHEDULING
+- **ALWAYS** maintain weekly content mix:
+  - Monday: system critique
+  - Wednesday: framework/tool
+  - Friday: community spotlight
+- **ALWAYS** use optimal posting times:
+  - Instagram: 11 AM, 2 PM, 5 PM EST
+  - LinkedIn: 8 AM, 12 PM, 6 PM EST
+- **ALWAYS** balance content pillars and themes
+- **NEVER** schedule content without proper theme categorization
+
+## IMPLEMENTATION PRIORITIES
+
+### When Adding New Features:
+1. **First**: Check requirements.md for compliance
+2. **Second**: Implement service layer with proper business logic
+3. **Third**: Add database models with migrations
+4. **Fourth**: Create API endpoints with proper schemas
+5. **Fifth**: Add comprehensive tests
+6. **Sixth**: Update documentation
+
+### When Fixing Bugs:
+1. **First**: Write a failing test that reproduces the bug
+2. **Second**: Fix the bug with minimal code changes
+3. **Third**: Ensure all tests pass
+4. **Fourth**: Update documentation if needed
+
+### When Refactoring:
+1. **First**: Ensure comprehensive test coverage exists
+2. **Second**: Make incremental changes
+3. **Third**: Run tests after each change
+4. **Fourth**: Update documentation to reflect changes
+
+## ERROR HANDLING PATTERNS
+
+### API Endpoints:
+```python
+try:
+    result = await service.method()
+    return result
+except ServiceException as e:
+    raise HTTPException(status_code=400, detail=str(e))
+except Exception as e:
+    logger.error(f"Unexpected error: {e}")
+    raise HTTPException(status_code=500, detail="Internal server error")
+```
+
+### Service Layer:
+```python
+async def service_method(self, param: str) -> Result:
+    """Service method with proper error handling."""
+    try:
+        # Business logic here
+        return result
+    except ExternalAPIError as e:
+        logger.warning(f"External API failed: {e}")
+        # Implement fallback logic
+        return fallback_result
+    except ValidationError as e:
+        logger.error(f"Validation failed: {e}")
+        raise ServiceException(f"Invalid input: {e}")
+```
+
+## LOGGING STANDARDS
+- **ALWAYS** use structured logging with proper levels
+- **ALWAYS** include correlation IDs for request tracking
+- **ALWAYS** log important business events
+- **NEVER** log sensitive information (API keys, user data)
+- **ALWAYS** use appropriate log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+
+## COMMIT MESSAGE STANDARDS
+- Use conventional commits format: `type(scope): description`
+- Types: feat, fix, docs, style, refactor, test, chore
+- Examples:
+  - `feat(content): add carousel template selection logic`
+  - `fix(api): handle missing trend opportunity gracefully`
+  - `docs(readme): update installation instructions`
+
+## REVIEW CHECKLIST
+Before submitting any code, ensure:
+- [ ] All tests pass
+- [ ] Code follows style guidelines
+- [ ] Documentation is updated
+- [ ] Brand voice compliance is maintained
+- [ ] Security best practices are followed
+- [ ] Performance requirements are met
+- [ ] Error handling is implemented
+- [ ] Logging is appropriate
+- [ ] Configuration is externalized
+
+## EMERGENCY PROCEDURES
+If the system fails:
+1. **First**: Check health endpoints and logs
+2. **Second**: Verify external API connectivity
+3. **Third**: Check database connectivity
+4. **Fourth**: Review recent deployments
+5. **Fifth**: Implement manual fallback procedures
+6. **Sixth**: Document incident and lessons learned
+
+Remember: The goal is to create a robust, scalable, and maintainable system that embodies the Based Labs philosophy while delivering exceptional content generation capabilities.
