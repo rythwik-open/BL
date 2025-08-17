@@ -1,5 +1,6 @@
 ---
-inclusion: always
+inclusion: fileMatch
+fileMatchPattern: '**/content*'
 ---
 
 # Content Generation Rules for Based Labs Automation

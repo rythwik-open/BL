@@ -2,6 +2,11 @@
 inclusion: always
 ---
 
+---
+inclusion: fileMatch
+fileMatchPattern: '**/content*'
+---
+
 # Based Labs Brand Voice & Content Guidelines
 
 ## Core Voice Characteristics

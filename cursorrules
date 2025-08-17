@@ -1,30 +1,18 @@
 # Based Labs Automated Content Pipeline - Cursor Rules
 
 ## Project Overview
-You are working on the Based Labs Automated Content Pipeline, a comprehensive system that transforms content curation into published social media posts with minimal human intervention while maintaining Based Labs brand voice and quality standards.
+You are working on the Based Labs Automated Content Pipeline, a comprehensive system that transforms content curation into published social media posts with minimal human intervention.
 
 ## Core Documentation References
 - **Requirements**: `.kiro/specs/automated-content-pipeline/requirements.md`
 - **Design**: `.kiro/specs/automated-content-pipeline/design.md` 
 - **Tasks**: `.kiro/specs/automated-content-pipeline/tasks.md`
 - **Directory Structure**: `.kiro/steering/directory-structure.md`
-- **Brand Guidelines**: `.kiro/steering/based-labs-voice.md`
-- **Content Rules**: `.kiro/steering/content-generation-rules.md`
+- **Backend Architecture**: `.kiro/steering/backend-architecture-guidelines.md`
 
 ## STRICT DEVELOPMENT RULES
 
-### 1. BRAND VOICE COMPLIANCE
-- **ALWAYS** maintain 7/10 provocative level in content generation
-- **ALWAYS** use Based Labs hook formulas:
-  - "You're waiting for permission that will never come"
-  - "This rule made sense in 1950. It's destroying you in 2025"
-  - "Everyone does X, but here's why Y works better"
-  - "If [system] can replace you, it's not your fault—it's the system you were trained for"
-- **ALWAYS** focus on: agency over permission, system inefficiencies, gatekeeping, individual empowerment
-- **NEVER** create content that doesn't include clear value proposition and specific next action
-- **NEVER** exceed provocative level 8/10 or go below 6/10
-
-### 2. ARCHITECTURE COMPLIANCE
+### 1. ARCHITECTURE COMPLIANCE
 - **ALWAYS** follow the service-oriented architecture defined in design.md
 - **ALWAYS** use async/await for database operations and external API calls
 - **ALWAYS** implement proper error handling with graceful degradation
@@ -32,7 +20,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **NEVER** create circular imports between services
 - **ALWAYS** use dependency injection pattern with FastAPI Depends()
 
-### 3. DATABASE AND MODEL RULES
+### 2. DATABASE AND MODEL RULES
 - **ALWAYS** use SQLAlchemy async sessions
 - **ALWAYS** inherit from BaseModel for common fields (id, created_at, updated_at)
 - **ALWAYS** use UUID for primary keys
@@ -41,7 +29,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **NEVER** create models without proper migrations
 - **ALWAYS** use descriptive table and column names in snake_case
 
-### 4. API DEVELOPMENT RULES
+### 3. API DEVELOPMENT RULES
 - **ALWAYS** use Pydantic schemas for request/response validation
 - **ALWAYS** include proper HTTP status codes and error responses
 - **ALWAYS** implement pagination for list endpoints (default limit: 10)
@@ -50,25 +38,22 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **ALWAYS** include API documentation with examples
 - **ALWAYS** validate input data and sanitize outputs
 
-### 5. CONTENT GENERATION RULES
-- **ALWAYS** validate content against Based Labs quality filters before saving
-- **ALWAYS** implement automatic regeneration for failed quality checks
-- **ALWAYS** use character count thresholds for template selection:
-  - <100 chars: quote_minimal template
-  - 100-800 chars: long_form template  
-  - >800 chars: carousel_series template
-- **NEVER** generate content without brand voice validation
-- **ALWAYS** include engagement metrics tracking (2% engagement threshold, 1% save threshold)
+### 4. CONTENT GENERATION TECHNICAL RULES
+- **ALWAYS** implement proper validation pipelines for generated content
+- **ALWAYS** use template selection logic based on content analysis
+- **ALWAYS** implement retry mechanisms for failed generation attempts
+- **ALWAYS** track and store generation metrics and performance data
+- **NEVER** bypass validation layers in the content pipeline
 
-### 6. IMAGE GENERATION RULES
+### 5. IMAGE GENERATION TECHNICAL RULES
 - **ALWAYS** use the BasedLabsImageGenerator service for all image creation
-- **ALWAYS** maintain brand consistency: neon green (#00ff00), black backgrounds, high contrast
-- **ALWAYS** ensure text readability across all devices
-- **ALWAYS** apply professional effects (color grading, typography, shadows)
-- **NEVER** create images without proper template selection
-- **ALWAYS** optimize images for platform requirements (1080x1080 for Instagram)
+- **ALWAYS** implement proper image optimization and format conversion
+- **ALWAYS** ensure responsive image handling across different screen sizes
+- **ALWAYS** implement proper memory management for image processing
+- **NEVER** create images without proper template validation
+- **ALWAYS** optimize images for platform-specific requirements
 
-### 7. TESTING REQUIREMENTS
+### 6. TESTING REQUIREMENTS
 - **ALWAYS** write unit tests for all service methods
 - **ALWAYS** write integration tests for complete workflows
 - **ALWAYS** mock external API calls in tests
@@ -76,7 +61,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **NEVER** commit code without passing tests
 - **ALWAYS** maintain test coverage above 80%
 
-### 8. CODE QUALITY STANDARDS
+### 7. CODE QUALITY STANDARDS
 - **ALWAYS** use type hints for all function parameters and returns
 - **ALWAYS** write docstrings for public functions and classes
 - **ALWAYS** follow PEP 8 style guidelines
@@ -85,7 +70,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **ALWAYS** handle exceptions gracefully with proper logging
 - **ALWAYS** use async context managers for resource management
 
-### 9. SECURITY REQUIREMENTS
+### 8. SECURITY REQUIREMENTS
 - **ALWAYS** validate and sanitize all user inputs
 - **ALWAYS** use environment variables for sensitive configuration
 - **NEVER** commit API keys or secrets to version control
@@ -93,7 +78,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **ALWAYS** use HTTPS in production configurations
 - **ALWAYS** implement rate limiting for public endpoints
 
-### 10. PERFORMANCE REQUIREMENTS
+### 9. PERFORMANCE REQUIREMENTS
 - **ALWAYS** use connection pooling for database connections
 - **ALWAYS** implement caching for frequently accessed data
 - **ALWAYS** use background tasks (Celery) for long-running operations
@@ -101,7 +86,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **ALWAYS** optimize database queries to avoid N+1 problems
 - **ALWAYS** implement proper pagination and filtering
 
-### 11. DIRECTORY STRUCTURE COMPLIANCE
+### 10. DIRECTORY STRUCTURE COMPLIANCE
 - **ALWAYS** follow the exact directory structure defined in `.kiro/steering/directory-structure.md`
 - **NEVER** create files outside the established structure
 - **ALWAYS** use proper naming conventions:
@@ -110,7 +95,7 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
   - kebab-case for directories when needed
 - **ALWAYS** organize imports in the correct order (stdlib, third-party, local)
 
-### 12. DEPLOYMENT AND CONFIGURATION
+### 11. DEPLOYMENT AND CONFIGURATION
 - **ALWAYS** use Docker for containerization
 - **ALWAYS** include health check endpoints
 - **ALWAYS** use environment-based configuration
@@ -118,30 +103,38 @@ You are working on the Based Labs Automated Content Pipeline, a comprehensive sy
 - **ALWAYS** include proper logging configuration
 - **ALWAYS** use Alembic for database migrations
 
-### 13. COMMUNITY ENGAGEMENT RULES
-- **ALWAYS** categorize comments (question, feedback, spam, engagement)
-- **ALWAYS** provide constructive response suggestions
-- **ALWAYS** convert community questions into content opportunities
-- **NEVER** ignore negative feedback - provide guidance for constructive responses
-- **ALWAYS** track sentiment analysis for community interactions
+### 12. COMMUNITY ENGAGEMENT TECHNICAL RULES
+- **ALWAYS** implement proper comment categorization algorithms
+- **ALWAYS** use structured data models for community interactions
+- **ALWAYS** implement sentiment analysis with proper ML pipelines
+- **ALWAYS** create automated workflows for community data processing
+- **ALWAYS** implement proper data storage and retrieval for community metrics
 
-### 14. ANALYTICS AND MONITORING
+### 13. ANALYTICS AND MONITORING
 - **ALWAYS** track all required metrics (engagement, saves, clicks, reach)
 - **ALWAYS** implement performance thresholds and alerting
 - **ALWAYS** provide actionable insights and recommendations
 - **NEVER** collect metrics without proper analysis and reporting
 - **ALWAYS** implement continuous learning from performance data
 
-### 15. CONTENT CALENDAR AND SCHEDULING
-- **ALWAYS** maintain weekly content mix:
-  - Monday: system critique
-  - Wednesday: framework/tool
-  - Friday: community spotlight
-- **ALWAYS** use optimal posting times:
-  - Instagram: 11 AM, 2 PM, 5 PM EST
-  - LinkedIn: 8 AM, 12 PM, 6 PM EST
-- **ALWAYS** balance content pillars and themes
-- **NEVER** schedule content without proper theme categorization
+### 14. SCHEDULING AND CALENDAR TECHNICAL RULES
+- **ALWAYS** implement proper scheduling algorithms with timezone handling
+- **ALWAYS** use database-driven scheduling with proper indexing
+- **ALWAYS** implement retry mechanisms for failed scheduled posts
+- **ALWAYS** create proper data models for calendar and scheduling features
+- **NEVER** hardcode scheduling logic - make it configurable
+
+### 15. BACKEND ARCHITECTURE GUIDELINES MAINTENANCE
+- **ALWAYS** update `.kiro/steering/backend-architecture-guidelines.md` when adding new technologies, libraries, or frameworks
+- **ALWAYS** include version requirements and rationale for new dependencies
+- **ALWAYS** update the library version management section when changing dependency versions
+- **ALWAYS** document new API integration patterns and security requirements
+- **ALWAYS** update performance standards when adding new services or endpoints
+- **NEVER** introduce new technologies without updating the architecture guidelines
+- **ALWAYS** include usage guidelines and implementation patterns for new tech stack components
+- **ALWAYS** update deployment standards when changing containerization or CI/CD processes
+- **ALWAYS** document new monitoring and observability requirements
+- **ALWAYS** update the project structure section when adding new directories or reorganizing code
 
 ## IMPLEMENTATION PRIORITIES
 
